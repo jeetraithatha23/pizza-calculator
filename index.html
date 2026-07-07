@@ -138,6 +138,26 @@
   <!-- INPUTS -->
   <div>
     <div class="card no-print">
+      <h2>Pizza day</h2>
+      <div class="row"><label>Date</label><input type="date" id="bakeDate" style="width:auto;text-align:left"></div>
+      <div class="row"><label>Bake time (first launch)</label><input type="time" id="bakeTime" value="17:00"></div>
+      <div class="row"><label>Room temp on pizza day (&deg;C) <span class="hint">Sets the yeast level and the day's timings</span></label><input type="number" id="roomTempCook" value="21" min="10" max="38" step="0.5"></div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Dough day</h2>
+      <div class="row"><label>Cold ferment length</label>
+        <select id="fermentHours">
+          <option value="24">24 hours</option>
+          <option value="48" selected>44&ndash;48 hours (standard)</option>
+          <option value="72">72 hours</option>
+        </select>
+      </div>
+      <div class="row"><label>Room temp on dough day (&deg;C) <span class="hint">Sets the water temperature guide</span></label><input type="number" id="roomTempMix" value="21" min="10" max="38" step="0.5"></div>
+      <div class="note" id="doughDayNote"></div>
+    </div>
+
+    <div class="card no-print">
       <h2>Batch</h2>
       <div class="row"><label>Scale by</label>
         <select id="scaleMode">
@@ -195,19 +215,6 @@
       <div class="note" id="ballingResult">Weigh your dough after mixing and enter it here to get exact ball weights.</div>
     </div>
 
-    <div class="card no-print">
-      <h2>Fermentation &amp; environment</h2>
-      <div class="row"><label>Pizza day (date)</label><input type="date" id="bakeDate" style="width:auto;text-align:left"></div>
-      <div class="row"><label>Cold ferment length</label>
-        <select id="fermentHours">
-          <option value="24">24 hours</option>
-          <option value="48" selected>44&ndash;48 hours (standard)</option>
-          <option value="72">72 hours</option>
-        </select>
-      </div>
-      <div class="row"><label>Room temperature (&deg;C) <span class="hint">Kitchen temp on pizza day</span></label><input type="number" id="roomTemp" value="21" min="10" max="38" step="0.5"></div>
-      <div class="row"><label>Bake time (first launch)</label><input type="time" id="bakeTime" value="17:00"></div>
-    </div>
   </div>
 
   <!-- OUTPUTS -->
@@ -270,7 +277,7 @@
 <script>
 (function () {
   const $ = id => document.getElementById(id);
-  const inputs = ["scaleMode","flourWeight","numBalls","pizzaSize","thickness","hydration","salt","oil","sugar","yeastType","yeastMode","yeastManual","fermentHours","roomTemp","bakeTime","bakeDate","actualDough","copyStyle"];
+  const inputs = ["scaleMode","flourWeight","numBalls","pizzaSize","thickness","hydration","salt","oil","sugar","yeastType","yeastMode","yeastManual","fermentHours","roomTempCook","roomTempMix","bakeTime","bakeDate","actualDough","copyStyle"];
   let lastSchedule = [];
 
   // Ball weight from NY thickness factor (oz per sq inch), rounded to 5 g.
@@ -322,8 +329,25 @@
     const salt = +$("salt").value || 0;
     const oil = +$("oil").value || 0;
     const sugar = +$("sugar").value || 0;
-    const roomTemp = +$("roomTemp").value || 21;
+    const roomTemp = +$("roomTempCook").value || 21;
+    const mixTemp = +$("roomTempMix").value || 21;
     const fermentHours = +$("fermentHours").value;
+
+    // ---- Dough day note: mixing date + water temperature guide ----
+    // Water temp from desired dough temp (DDT 24°C): 3 x DDT - room - flour - friction.
+    // Flour assumed at room temp; Kenwood friction ~3°C over this short mix.
+    let dd = "";
+    const bd = $("bakeDate").value;
+    if (bd) {
+      const d0 = new Date(bd + "T12:00:00");
+      d0.setDate(d0.getDate() - Math.round(fermentHours / 24));
+      dd = "Make the dough on <strong>" + d0.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + "</strong>, around the same time of day as your bake. ";
+    }
+    let wt = Math.round(3 * 24 - 2 * mixTemp - 3);
+    wt = Math.max(5, Math.min(30, wt));
+    dd += `Use water at about <strong>${wt}&deg;C</strong> so the finished dough lands at 23&ndash;25&deg;C.`;
+    if (mixTemp >= 27) dd += ` <span class="warn">Warm kitchen on dough day: use fridge-cold water and get the balls into the fridge promptly.</span>`;
+    $("doughDayNote").innerHTML = dd;
     const yeastType = $("yeastType").value;
     const auto = $("yeastMode").value === "auto";
     $("manualYeastRow").style.display = auto ? "none" : "flex";
@@ -385,7 +409,7 @@
 
     // Yeast note
     let yn = auto
-      ? `<strong>Auto yeast:</strong> ${fmtPct(freshPct)} fresh-yeast basis for ${fermentHours <= 24 ? "24 h" : fermentHours >= 72 ? "72 h" : "44–48 h"} cold ferment at ${roomTemp}°C room temperature.`
+      ? `<strong>Auto yeast:</strong> ${fmtPct(freshPct)} fresh-yeast basis for ${fermentHours <= 24 ? "24 h" : fermentHours >= 72 ? "72 h" : "44–48 h"} cold ferment at ${roomTemp}°C on pizza day.`
       : `<strong>Manual yeast:</strong> ${fmtPct(freshPct)} fresh-yeast basis.`;
     if (yeastType === "instant") yn += " Converted to instant at one third of the fresh weight.";
     if (roomTemp >= 27) yn += ` <span class="warn">Warm kitchen: yeast reduced to help prevent over-proofing.</span>`;
