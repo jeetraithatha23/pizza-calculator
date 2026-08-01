@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeet's NY Pizza Dough Calculator</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --card: #fbfbf7;
+    --card2: #f3f4ec;
+    --accent: #b02a1f;
+    --accent2: #8f2118;
+    --text: #26281f;
+    --muted: #6f7566;
+    --line: #dfe3d8;
+    --good: #3f7a34;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 16px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  header { text-align: center; margin: 12px 0 18px; }
+  header h1 { font-size: 1.55rem; letter-spacing: 0.3px; }
+  header p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+
+  /* Mode toggle */
+  .modes { display: flex; gap: 8px; margin: 0 0 20px; }
+  .mode-btn {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .mode-btn .k { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+  .mode-btn .s { font-size: 0.74rem; color: var(--muted); display: block; margin-top: 2px; }
+  .mode-btn.active { background: var(--accent); border-color: var(--accent); }
+  .mode-btn.active .k, .mode-btn.active .s { color: #fff; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(60, 40, 20, 0.08);
+  }
+  .card h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+  }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .row:last-child { margin-bottom: 0; }
+  label { font-size: 0.92rem; }
+  .hint { color: var(--muted); font-size: 0.78rem; display: block; }
+  input[type=number], input[type=time], input[type=date], select {
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    width: 120px;
+    text-align: right;
+  }
+  input[type=date] { width: auto; text-align: left; }
+  select { width: auto; text-align: left; }
+  input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 9px 6px; text-align: left; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+  th { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 1px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .g { font-weight: 700; color: var(--accent); }
+  .total-line { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 2px solid var(--line); font-weight: 600; }
+
+  .note {
+    background: var(--card2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .note strong { color: var(--text); }
+  .note.good { border-left-color: var(--good); }
+  .warn { color: #a3610e; }
+
+  .sched { list-style: none; }
+  .sched li { margin: 0 0 12px 0; display: flex; gap: 12px; align-items: baseline; }
+  .sched .t { min-width: 72px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .sched .d { font-size: 0.9rem; }
+  .sched .d b { color: var(--text); }
+
+  ol.steps { margin-left: 20px; }
+  ol.steps li { margin-bottom: 11px; font-size: 0.92rem; padding-left: 4px; }
+  ol.steps li::marker { color: var(--accent); font-weight: 700; }
+
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 8px 0 0;
+  }
+  .btn:hover { background: var(--accent2); }
+  .btn.alt { background: var(--good); }
+  footer { text-align: center; color: var(--muted); font-size: 0.78rem; margin: 22px 0 8px; }
+  .hidden { display: none; }
+
+  @media print {
+    body { padding: 0; }
+    .no-print, .btn, .modes { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #bbb; break-inside: avoid; }
+    header p { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#127829; Jeet's New York Pizza Dough</h1>
+  <p>Strong bread flour &middot; cold fermented as balls &middot; your Kenwood &amp; Gozney Arc</p>
+</header>
+
+<div class="modes no-print">
+  <div class="mode-btn active" id="tabDough" role="button" tabindex="0">
+    <span class="k">Dough Day</span>
+    <span class="s">Make it &amp; ball it</span>
+  </div>
+  <div class="mode-btn" id="tabBake" role="button" tabindex="0">
+    <span class="k">Bake Day</span>
+    <span class="s">When to pull it out</span>
+  </div>
+</div>
+
+<!-- ================= DOUGH DAY ================= -->
+<section id="doughMode">
+
+  <div class="card no-print">
+    <h2>Your batch</h2>
+    <div class="row"><label>Number of pizzas</label><input type="number" id="numBalls" value="4" min="1" max="24" step="1"></div>
+    <div class="row"><label>Ball weight (g) <span class="hint">12in &asymp;260 &middot; 14in &asymp;350 &middot; 16in &asymp;450</span></label><input type="number" id="ballWeight" value="350" min="150" max="700" step="10"></div>
+    <div class="row"><label>Loss allowance (%) <span class="hint">Makes a little extra for what sticks to the hook, hands and bowl</span></label><input type="number" id="overage" value="5" min="0" max="20" step="1"></div>
+    <div class="row"><label>Cold ferment <span class="hint">In the fridge, as balls</span></label>
+      <select id="fermentDays">
+        <option value="1">1 day</option>
+        <option value="2">2 days</option>
+        <option value="3" selected>3 days</option>
+        <option value="4">4 days</option>
+      </select>
+    </div>
+    <div class="row"><label>Baking on <span class="hint">Optional. Set your pizza day to get the mixing day</span></label><input type="date" id="planBakeDate"></div>
+    <div class="row"><label>Room temp today (&deg;C) <span class="hint">Sets the water and the bench rest</span></label><input type="number" id="roomTempMix" value="21" min="8" max="38" step="0.5"></div>
+    <div class="note good" id="planNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recipe</h2>
+    <table>
+      <thead><tr><th>Ingredient</th><th class="num">Baker's %</th><th class="num">Weight</th></tr></thead>
+      <tbody id="recipeBody"></tbody>
+    </table>
+    <div class="total-line"><span id="ballSummary"></span><span id="totalDough"></span></div>
+    <div class="note" id="yeastNote"></div>
+    <div class="note" id="waterNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>Method</h2>
+    <ol class="steps" id="doughSteps"></ol>
+  </div>
+
+  <div class="card">
+    <h2>Weigh &amp; split</h2>
+    <div class="row no-print"><label>Weighed dough (g) <span class="hint">What you actually pulled off the hook, after mixing</span></label><input type="number" id="actualDough" min="0" max="9000" step="10" placeholder="e.g. 1360"></div>
+    <div class="note" id="splitNote"></div>
+  </div>
+
+</section>
+
+<!-- ================= BAKE DAY ================= -->
+<section id="bakeMode" class="hidden">
+
+  <div class="card no-print">
+    <h2>Pizza day</h2>
+    <div class="row"><label>Date</label><input type="date" id="bakeDate"></div>
+    <div class="row"><label>First launch</label><input type="time" id="bakeTime" value="17:30"></div>
+    <div class="row"><label>Room temp now (&deg;C) <span class="hint">The real number off your thermometer</span></label><input type="number" id="roomTempCook" value="24" min="8" max="38" step="0.5"></div>
+  </div>
+
+  <div class="card">
+    <h2>The plan</h2>
+    <ul class="sched" id="schedule"></ul>
+    <div class="note" id="mixByNote"></div>
+    <div class="note" id="tempNote"></div>
+    <div class="no-print">
+      <div class="row"><label>Copy timings for</label>
+        <select id="copyStyle">
+          <option value="home" selected>Anyone at home</option>
+          <option value="cook">The cook</option>
+        </select>
+      </div>
+      <button class="btn" id="copyBtn">Copy timings</button>
+      <button class="btn alt" id="icsBtn">Add to iPhone calendar</button>
+      <p class="hint" style="margin-top:10px">"Anyone at home" is a friendly overview to drop in the family chat. "The cook" gives the full detail for each step. The calendar file adds every step as an event with an alert.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>At the oven</h2>
+    <ol class="steps" id="bakeSteps"></ol>
+  </div>
+
+</section>
+
+<footer>Built for Jeet &middot; keep the fridge cold and the stone hot</footer>
+
+<script>
+(function () {
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  // ---- Fixed house formula (Pizza Pig, single strong bread flour) ----
+  const HYD = 61, SALT = 2.6, OIL = 2, SUGAR = 1.5;
+  // Fresh yeast basis, anchored at 0.48% for a 3-day ferment, scaled by days.
+  const freshPctFor = d => 1.44 / d;               // d=3 -> 0.48%
+  const fmtG = g => (g >= 100 ? Math.round(g) : Math.round(g * 10) / 10) + " g";
+  const fmtPct = p => (Math.round(p * 100) / 100) + "%";
+
+  const inputs = ["numBalls","ballWeight","overage","fermentDays","roomTempMix","planBakeDate","actualDough","bakeDate","bakeTime","roomTempCook","copyStyle"];
+  let lastSchedule = [];
+
+  // ---- Mode switching ----
+  function setMode(m) {
+    const dough = m === "dough";
+    $("doughMode").classList.toggle("hidden", !dough);
+    $("bakeMode").classList.toggle("hidden", dough);
+    $("tabDough").classList.toggle("active", dough);
+    $("tabBake").classList.toggle("active", !dough);
+    try { localStorage.setItem("nyPizzaMode", m); } catch (e) {}
+  }
+  $("tabDough").addEventListener("click", () => setMode("dough"));
+  $("tabBake").addEventListener("click", () => setMode("bake"));
+  $("tabDough").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") setMode("dough"); });
+  $("tabBake").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") setMode("bake"); });
+
+  // ---- Time helpers ----
+  function addMinutes(hhmm, mins) {
+    let [h, m] = hhmm.split(":").map(Number);
+    let t = h * 60 + m + mins;
+    t = ((t % 1440) + 1440) % 1440;
+    return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
+  }
+  function niceTime(t) {
+    let [h, m] = t.split(":").map(Number);
+    const ap = h >= 12 ? "pm" : "am";
+    h = h % 12 || 12;
+    return h + ":" + String(m).padStart(2, "0") + ap;
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  }
+  function shiftDays(dateStr, delta) {
+    const d = new Date(dateStr + "T12:00:00");
+    d.setDate(d.getDate() + delta);
+    return d;
+  }
+
+  // ---- Main calc ----
+  function calc() {
+    // ===== DOUGH DAY =====
+    const n = Math.max(1, +$("numBalls").value || 1);
+    const bw = Math.max(1, +$("ballWeight").value || 350);
+    const days = +$("fermentDays").value || 3;
+    const Tm = +$("roomTempMix").value;
+    const overage = Math.max(0, +$("overage").value || 0);
+    const freshPct = freshPctFor(days);
+
+    const totalPct = 100 + HYD + SALT + OIL + SUGAR + freshPct;
+    const targetDough = n * bw;                          // what you want in balls
+    const totalDough = targetDough * (1 + overage / 100); // what the recipe makes
+    const flour = totalDough / (totalPct / 100);
+
+    const fresh = flour * freshPct / 100;
+    const rows = [
+      ["Strong white bread flour", 100, flour],
+      ["Water", HYD, flour * HYD / 100],
+      ["Salt", SALT, flour * SALT / 100],
+      ["Olive oil", OIL, flour * OIL / 100],
+      ["Sugar", SUGAR, flour * SUGAR / 100],
+      ["Fresh yeast", freshPct, fresh]
+    ];
+    $("recipeBody").innerHTML = rows.map(r =>
+      `<tr><td>${r[0]}</td><td class="num">${fmtPct(r[1])}</td><td class="num g">${fmtG(r[2])}</td></tr>`
+    ).join("");
+    $("totalDough").textContent = Math.round(totalDough) + " g total";
+    $("ballSummary").innerHTML = n + (n > 1 ? " balls × " : " ball × ") + bw + " g" +
+      (overage > 0 ? ` <span class="hint">(making ${Math.round(totalDough)} g to cover ${overage}% loss)</span>` : "");
+
+    // Yeast conversions
+    $("yeastNote").innerHTML =
+      `<strong>Yeast:</strong> ${fmtG(fresh)} fresh for a ${days}-day cold ferment. ` +
+      `No fresh in? Use ${fmtG(fresh / 2)} active dried, or ${fmtG(fresh / 3)} instant.`;
+
+    // Water rule (Pizza Pig)
+    if (Tm <= 19) {
+      $("waterNote").innerHTML = `<strong>Water:</strong> kitchen's cool at ${Tm}&deg;C, so use warm water at 25–30&deg;C to get the yeast going.`;
+    } else {
+      $("waterNote").innerHTML = `<strong>Water:</strong> use it cold, straight from the fridge (~4–6&deg;C). The warm kitchen does the rest.`;
+    }
+
+    // Bench rest by temp (whole-dough rest before dividing)
+    let restMin, restBand;
+    if (Tm >= 24) { restMin = 15; restBand = "warm"; }
+    else if (Tm >= 20) { restMin = 30; restBand = "middling"; }
+    else { restMin = 60; restBand = "cool"; }
+
+    const waterLine = Tm <= 19 ? "warm water (25–30&deg;C)" : "cold water";
+    $("doughSteps").innerHTML = [
+      `Mix the ${waterLine} with the fresh yeast on Speed 1 for about a minute.`,
+      `Add all the flour. Mix on Speed 1 until there's no dry flour left, then stop and rest 10–15 minutes.`,
+      `Back on Speed 1, drizzle in the olive oil and mix about a minute until smooth.`,
+      `Add the salt and sugar. Mix on Speed 1 for roughly 2 minutes, until the dough comes cleanly off the sides of the bowl.`,
+      `Turn out onto the bench and do a few stretch-and-folds until it stops sticking to your hands.`,
+      `Shape into one round and rest, covered, for <b>${restMin} minutes</b> (${restBand} kitchen at ${Tm}&deg;C).`,
+      `Divide into <b>${n} piece${n > 1 ? "s" : ""} of ${bw} g</b>. Weigh them so they match.`,
+      `Ball each one tight: fold it over itself 4 or 5 times until the top is smooth, pinch the seam closed underneath, then roll it on the bench to seal. This is the bit that stops a ball tearing later.`,
+      `Oil your containers, drop the balls in with room to spread, lid on.`,
+      `Into the fridge to cold ferment for <b>${days} day${days > 1 ? "s" : ""}</b>. Switch to Bake Day mode when you're ready to cook.`
+    ].map(s => `<li>${s}</li>`).join("");
+
+    // Fermentation planning
+    const planVal = $("planBakeDate").value;
+    if (planVal) {
+      const bakeOn = new Date(planVal + "T12:00:00");
+      const mixOn = shiftDays(planVal, -days);
+      $("planNote").innerHTML =
+        `To bake on <b>${fmtDate(bakeOn)}</b>, start the dough on <b>${fmtDate(mixOn)}</b>, ` +
+        `then cold ferment ${days} day${days > 1 ? "s" : ""} in the fridge.`;
+    } else {
+      const today = new Date().toISOString().slice(0, 10);
+      const ready = shiftDays(today, days);
+      $("planNote").innerHTML =
+        `Mixed today, this dough is ready to bake from <b>${fmtDate(ready)}</b>. ` +
+        `Set a bake day above to work back to a mixing day instead.`;
+    }
+
+    // Weigh & split: divide the ACTUAL weighed dough, not the theoretical total
+    const actual = +$("actualDough").value;
+    if (actual > 0) {
+      const each = actual / n;
+      const loss = totalDough - actual;
+      const dev = (each - bw) / bw * 100;
+      let msg = `<strong>Divide into ${n} ball${n > 1 ? "s" : ""} of ${Math.round(each)} g each.</strong>`;
+      if (Math.abs(dev) < 3) {
+        msg += ` Bang on your ${bw} g target.`;
+      } else {
+        msg += ` That's ${dev > 0 ? "+" : ""}${Math.round(dev)}% on your ${bw} g target, so slightly ${dev > 0 ? "bigger" : "smaller"} pizzas.`;
+      }
+      if (loss > 5) msg += `<br><span class="hint">About ${Math.round(loss)} g stayed on the hook, hands and bowl. That's the usual tax, nothing wrong.</span>`;
+      else if (loss < -5) msg += `<br><span class="hint">That's ${Math.round(-loss)} g more than the recipe predicts, worth a quick re-check of the scales.</span>`;
+      $("splitNote").innerHTML = msg;
+    } else {
+      $("splitNote").innerHTML = `Recipe predicts <b>${Math.round(totalDough)} g</b>. Weigh what you actually get off the hook, Jeet, some always sticks, and pop it in here for exact ball weights.`;
+    }
+
+    // ===== BAKE DAY =====
+    const Tc = +$("roomTempCook").value;
+    const bake = $("bakeTime").value || "17:30";
+
+    // Proof length: 4h at >=24C, 6h at <=19C, linear between.
+    let proofMin;
+    if (Tc >= 24) proofMin = 240;
+    else if (Tc <= 19) proofMin = 360;
+    else proofMin = Math.round(360 - 24 * (Tc - 19));
+    const proofH = Math.round(proofMin / 6) / 10; // hours, 1dp
+
+    const outTime = addMinutes(bake, -proofMin);
+    const checkTime = addMinutes(bake, -60);
+    const preheat = addMinutes(bake, -40);
+    const flameLow = addMinutes(bake, -8);
+
+    const warm = Tc >= 25;
+    const items = [
+      [outTime, "Balls out of the fridge", `Take the balls out, keep them covered. About ${proofH} h before launch for a ${Tc}&deg;C kitchen. They need to warm up and relax before they'll stretch.`],
+      [checkTime, "Check the balls", `They should be puffed, soft and slack, spreading a little and jiggling when you nudge the tray. Ready too early? Slide them somewhere cooler, or briefly back in the fridge.`],
+      [preheat, "Light the Gozney", `Full flame on the Arc, 30–40 min, stone up to around 400&deg;C.`],
+      [flameLow, "Flame to low", `Drop the flame and let the launch spot settle to 340–350&deg;C.`],
+      [bake, "Launch", `Stretch, top, and launch the first one. Rotate every 30–45 s, out in 4½–5½ min. Enjoy it, Jeet.`]
+    ];
+    lastSchedule = items;
+    $("schedule").innerHTML = items.map(i =>
+      `<li><span class="t">${niceTime(i[0])}</span><span class="d"><b>${i[1]}.</b> ${i[2]}</span></li>`
+    ).join("");
+
+    const bakeDateVal = $("bakeDate").value;
+    if (bakeDateVal) {
+      const bakeOn2 = new Date(bakeDateVal + "T12:00:00");
+      const mixOn2 = shiftDays(bakeDateVal, -days);
+      $("mixByNote").innerHTML =
+        `<strong>Mixing day:</strong> for a ${fmtDate(bakeOn2)} bake, mix and ball the dough on ` +
+        `<b>${fmtDate(mixOn2)}</b> (${days} day${days > 1 ? "s" : ""} in the fridge).`;
+    } else {
+      $("mixByNote").innerHTML = "";
+    }
+
+    if (warm) {
+      $("tempNote").innerHTML = `<span class="warn">Warm kitchen (${Tc}&deg;C).</span> The balls will move fast, so from about an hour before launch trust the look and feel over the clock. If they race ahead, the fridge is your brake.`;
+      $("tempNote").className = "note";
+    } else {
+      $("tempNote").innerHTML = `Cool-ish at ${Tc}&deg;C, so give them the full ${proofH} h to wake up. Patience before stretching, a cold ball fights back and tears.`;
+      $("tempNote").className = "note good";
+    }
+
+    $("bakeSteps").innerHTML = [
+      `Flour the bench with a little semolina. Tip the ball out and gently press from the middle out, leaving a rim for the crust.`,
+      `Stretch on your knuckles, letting gravity do the work as you rotate around the edge. Push any excess semolina off.`,
+      `Move it onto a floured peel, top it quickly, and launch with the flame off.`,
+      `When the crust puffs on one side, spin it 180&deg;. After about a minute, flame back on low to finish the bake.`,
+      `Onto a rack for 3–4 minutes before slicing, so the base stays crisp.`
+    ].map(s => `<li>${s}</li>`).join("");
+
+    save();
+  }
+
+  // ---- Persistence (degrades safely) ----
+  function save() {
+    try {
+      const s = {};
+      inputs.forEach(id => s[id] = $(id).value);
+      localStorage.setItem("nyPizzaCalc2", JSON.stringify(s));
+    } catch (e) {}
+  }
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem("nyPizzaCalc2"));
+      if (s) inputs.forEach(id => { if (s[id] !== undefined && $(id)) $(id).value = s[id]; });
+      const m = localStorage.getItem("nyPizzaMode");
+      if (m) setMode(m);
+    } catch (e) {}
+  }
+
+  // ---- iPhone calendar + copy timings ----
+  function icsStamp(dateStr, timeStr) {
+    return dateStr.replace(/-/g, "") + "T" + timeStr.replace(":", "") + "00";
+  }
+  function makeICS() {
+    const dateStr = $("bakeDate").value || new Date().toISOString().slice(0, 10);
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Jeet Pizza Calculator//EN"];
+    lastSchedule.forEach((it, i) => {
+      lines.push(
+        "BEGIN:VEVENT",
+        "UID:pizza-" + dateStr + "-" + i + "@jeet",
+        "DTSTART:" + icsStamp(dateStr, it[0]),
+        "DTEND:" + icsStamp(dateStr, addMinutes(it[0], 10)),
+        "SUMMARY:" + "\u{1F355} " + it[1],
+        "DESCRIPTION:" + it[2].replace(/<[^>]+>/g, "").replace(/,/g, "\\,"),
+        "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + it[1], "TRIGGER:PT0S", "END:VALARM",
+        "END:VEVENT"
+      );
+    });
+    lines.push("END:VCALENDAR");
+    return lines.join("\r\n");
+  }
+  $("icsBtn").addEventListener("click", () => {
+    const blob = new Blob([makeICS()], { type: "text/calendar" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "pizza-day.ics";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  function timingsText() {
+    const dateStr = $("bakeDate").value || new Date().toISOString().slice(0, 10);
+    const d = new Date(dateStr + "T12:00:00");
+    const nice = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    const forCook = $("copyStyle").value === "cook";
+    const friendly = [
+      "dough balls come out of the fridge (keep them covered, don't poke them)",
+      "quick check on the dough (soft and puffy means they're ready)",
+      "oven goes on to heat up",
+      "flame goes down, nearly time",
+      "first pizza goes in! Eating shortly after"
+    ];
+    const clean = s => s.replace(/<[^>]+>/g, "").replace(/&deg;/g, "\u00B0").replace(/&amp;/g, "&");
+    let txt = "\u{1F355} Pizza day: " + nice + "\n\n";
+    lastSchedule.forEach((it, i) => {
+      const line = forCook ? (it[1] + " \u2013 " + clean(it[2])) : (friendly[i] || it[1]);
+      txt += niceTime(it[0]) + " \u2013 " + line + "\n";
+      if (forCook) txt += "\n";
+    });
+    return txt.trim();
+  }
+  $("copyBtn").addEventListener("click", async () => {
+    const txt = timingsText();
+    try { await navigator.clipboard.writeText(txt); }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    const b = $("copyBtn"); const orig = b.textContent;
+    b.textContent = "Copied!";
+    setTimeout(() => { b.textContent = orig; }, 1600);
+  });
+
+  inputs.forEach(id => $(id).addEventListener("input", calc));
+  load();
+  if (!$("bakeDate").value) $("bakeDate").value = new Date().toISOString().slice(0, 10);
+  calc();
+})();
+</script>
+</body>
+</html>
