@@ -23,14 +23,30 @@
     color: var(--text);
     line-height: 1.5;
     padding: 16px;
-    max-width: 980px;
+    max-width: 760px;
     margin: 0 auto;
   }
-  header { text-align: center; margin: 12px 0 24px; }
-  header h1 { font-size: 1.6rem; letter-spacing: 0.5px; }
-  header p { color: var(--muted); font-size: 0.9rem; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  header { text-align: center; margin: 12px 0 18px; }
+  header h1 { font-size: 1.55rem; letter-spacing: 0.3px; }
+  header p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+
+  /* Mode toggle */
+  .modes { display: flex; gap: 8px; margin: 0 0 20px; }
+  .mode-btn {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .mode-btn .k { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+  .mode-btn .s { font-size: 0.74rem; color: var(--muted); display: block; margin-top: 2px; }
+  .mode-btn.active { background: var(--accent); border-color: var(--accent); }
+  .mode-btn.active .k, .mode-btn.active .s { color: #fff; }
+
   .card {
     background: var(--card);
     border: 1px solid var(--line);
@@ -48,31 +64,31 @@
     border-bottom: 1px solid var(--line);
     padding-bottom: 8px;
   }
-  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .row:last-child { margin-bottom: 0; }
   label { font-size: 0.92rem; }
   .hint { color: var(--muted); font-size: 0.78rem; display: block; }
-  input[type=number], input[type=time], select {
+  input[type=number], input[type=time], input[type=date], select {
     background: var(--card2);
     color: var(--text);
     border: 1px solid var(--line);
     border-radius: 8px;
     padding: 8px 10px;
     font-size: 1rem;
-    width: 110px;
+    width: 120px;
     text-align: right;
   }
+  input[type=date] { width: auto; text-align: left; }
   select { width: auto; text-align: left; }
   input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
   table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
-  th { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+  th, td { padding: 9px 6px; text-align: left; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+  th { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 1px; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .big {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .g { font-weight: 700; color: var(--accent); }
   .total-line { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 2px solid var(--line); font-weight: 600; }
+
   .note {
     background: var(--card2);
     border-left: 3px solid var(--accent);
@@ -83,34 +99,25 @@
     margin-top: 12px;
   }
   .note strong { color: var(--text); }
-  .sched li { margin: 0 0 10px 0; list-style: none; display: flex; gap: 12px; }
-  .sched .t {
-    min-width: 76px;
-    font-weight: 700;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-  .steps li { margin-bottom: 10px; margin-left: 18px; font-size: 0.92rem; }
-  .steps li::marker { color: var(--accent); }
-  .pill {
-    display: inline-block;
-    background: var(--card2);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 2px 10px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin: 2px 4px 2px 0;
-  }
-  .pill b { color: var(--good); }
+  .note.good { border-left-color: var(--good); }
   .warn { color: #a3610e; }
-  footer { text-align: center; color: var(--muted); font-size: 0.78rem; margin: 20px 0; }
+
+  .sched { list-style: none; }
+  .sched li { margin: 0 0 12px 0; display: flex; gap: 12px; align-items: baseline; }
+  .sched .t { min-width: 72px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .sched .d { font-size: 0.9rem; }
+  .sched .d b { color: var(--text); }
+
+  ol.steps { margin-left: 20px; }
+  ol.steps li { margin-bottom: 11px; font-size: 0.92rem; padding-left: 4px; }
+  ol.steps li::marker { color: var(--accent); font-weight: 700; }
+
   .btn {
     background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 9px 14px;
+    padding: 10px 14px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -118,10 +125,12 @@
   }
   .btn:hover { background: var(--accent2); }
   .btn.alt { background: var(--good); }
+  footer { text-align: center; color: var(--muted); font-size: 0.78rem; margin: 22px 0 8px; }
+  .hidden { display: none; }
+
   @media print {
-    body { padding: 0; max-width: none; }
-    .no-print, .btn { display: none !important; }
-    .grid { display: block; }
+    body { padding: 0; }
+    .no-print, .btn, .modes { display: none !important; }
     .card { box-shadow: none; border: 1px solid #bbb; break-inside: avoid; }
     header p { display: none; }
   }
@@ -131,332 +140,328 @@
 
 <header>
   <h1>&#127829; Jeet's New York Pizza Dough</h1>
-  <p>Your Kenwood &middot; your Gozney Arc &middot; proper NY style &middot; cold fermented, never rushed</p>
+  <p>Strong bread flour &middot; cold fermented as balls &middot; your Kenwood &amp; Gozney Arc</p>
 </header>
 
-<div class="grid">
-  <!-- INPUTS -->
-  <div>
-    <div class="card no-print">
-      <h2>Pizza day</h2>
-      <div class="row"><label>Date</label><input type="date" id="bakeDate" style="width:auto;text-align:left"></div>
-      <div class="row"><label>Bake time (first launch)</label><input type="time" id="bakeTime" value="17:00"></div>
-      <div class="row"><label>Room temp on pizza day (&deg;C) <span class="hint">Sets the yeast level and the day's timings</span></label><input type="number" id="roomTempCook" value="21" min="10" max="38" step="0.5"></div>
-    </div>
-
-    <div class="card no-print">
-      <h2>Dough day</h2>
-      <div class="row"><label>Cold ferment length</label>
-        <select id="fermentHours">
-          <option value="24">24 hours</option>
-          <option value="48" selected>44&ndash;48 hours (standard)</option>
-          <option value="72">72 hours</option>
-        </select>
-      </div>
-      <div class="row"><label>Room temp on dough day (&deg;C) <span class="hint">Sets the water temperature guide</span></label><input type="number" id="roomTempMix" value="21" min="10" max="38" step="0.5"></div>
-      <div class="note" id="doughDayNote"></div>
-    </div>
-
-    <div class="card no-print">
-      <h2>Batch</h2>
-      <div class="row"><label>Scale by</label>
-        <select id="scaleMode">
-          <option value="flour" selected>Flour weight</option>
-          <option value="pizzas">Number of pizzas</option>
-        </select>
-      </div>
-      <div class="row" id="flourRow"><label>Flour weight <span class="hint">1000 g flour &asymp; 1690 g dough</span></label><input type="number" id="flourWeight" value="1000" min="200" max="5000" step="50"></div>
-      <div class="row" id="numRow" style="display:none"><label>Number of pizzas</label><input type="number" id="numBalls" value="3" min="1" max="20" step="1"></div>
-      <div class="row"><label>Pizza size</label>
-        <select id="pizzaSize">
-          <option value="10">10-inch</option>
-          <option value="12">12-inch</option>
-          <option value="14" selected>14-inch</option>
-          <option value="16">16-inch</option>
-        </select>
-      </div>
-      <div class="row"><label>Crust thickness <span class="hint">NY thickness factor, oz per sq inch</span></label>
-        <select id="thickness">
-          <option value="0.075">Elite thin (0.075)</option>
-          <option value="0.085" selected>Classic street (0.085)</option>
-          <option value="0.095">Thicker slice (0.095)</option>
-        </select>
-      </div>
-      <div class="note" id="sizeNote"></div>
-    </div>
-
-    <div class="card no-print">
-      <h2>Formula (baker's %)</h2>
-      <div class="row"><label>Hydration</label><input type="number" id="hydration" value="62" min="50" max="80" step="0.5"></div>
-      <div class="row"><label>Salt</label><input type="number" id="salt" value="2.5" min="0" max="4" step="0.1"></div>
-      <div class="row"><label>Olive oil</label><input type="number" id="oil" value="2" min="0" max="6" step="0.1"></div>
-      <div class="row"><label>Sugar</label><input type="number" id="sugar" value="1" min="0" max="4" step="0.1"></div>
-      <div class="row"><label>Yeast type</label>
-        <select id="yeastType">
-          <option value="fresh" selected>Fresh</option>
-          <option value="instant">Instant (IDY)</option>
-        </select>
-      </div>
-      <div class="row"><label>Yeast %
-        <span class="hint">Fresh-yeast basis. Leave on auto or override.</span></label>
-        <select id="yeastMode">
-          <option value="auto" selected>Auto (temp + ferment)</option>
-          <option value="manual">Manual</option>
-        </select>
-      </div>
-      <div class="row" id="manualYeastRow" style="display:none">
-        <label>Manual yeast %</label><input type="number" id="yeastManual" value="1.5" min="0.1" max="3" step="0.05">
-      </div>
-    </div>
-
-    <div class="card no-print">
-      <h2>After mixing: balling helper</h2>
-      <div class="row"><label>Actual dough weight (g) <span class="hint">Weigh the finished dough, the hook and bowl always keep a bit</span></label><input type="number" id="actualDough" placeholder="e.g. 1670" min="100" max="10000" step="1"></div>
-      <div class="note" id="ballingResult">Weigh your dough after mixing and enter it here to get exact ball weights.</div>
-    </div>
-
+<div class="modes no-print">
+  <div class="mode-btn active" id="tabDough" role="button" tabindex="0">
+    <span class="k">Dough Day</span>
+    <span class="s">Make it &amp; ball it</span>
   </div>
-
-  <!-- OUTPUTS -->
-  <div>
-    <div class="card">
-      <h2>Recipe</h2>
-      <table>
-        <thead><tr><th>Ingredient</th><th class="num">Baker's %</th><th class="num">Weight</th></tr></thead>
-        <tbody id="recipeBody"></tbody>
-      </table>
-      <div class="total-line"><span>Total dough</span><span class="big" id="totalDough"></span></div>
-      <div class="row" style="margin-top:6px"><span class="hint" id="ballSummary"></span></div>
-      <div class="note" id="yeastNote"></div>
-    </div>
-
-    <div class="card">
-      <h2>Your pizza day, Jeet</h2>
-      <ul class="sched" id="schedule"></ul>
-      <div class="note" id="tempNote"></div>
-      <div class="no-print">
-        <div class="row" style="margin-top:10px"><label>Copy timings for</label>
-          <select id="copyStyle">
-            <option value="home" selected>Anyone at home</option>
-            <option value="cook">The cook</option>
-          </select>
-        </div>
-        <button class="btn" id="copyBtn" type="button">&#128203; Copy timings</button>
-        <button class="btn alt" id="icsBtn" type="button">&#128241; Add to iPhone calendar</button>
-        <span class="hint" style="display:block;margin-top:8px">"Anyone at home" is a friendly overview for WhatsApp. "The cook" includes the full instructions for each step. The calendar file adds each step as an event with an alert.</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Gozney Arc</h2>
-      <span class="pill">Preheat <b>30&ndash;40 min</b> full flame</span>
-      <span class="pill">Launch zone <b>340&ndash;350&deg;C</b></span>
-      <span class="pill">Range <b>340&ndash;370&deg;C</b></span>
-      <span class="pill">Bake <b>4&frac12;&ndash;5&frac12; min</b></span>
-      <span class="pill">Rotate every <b>30&ndash;45 s</b></span>
-      <div class="note">Drop flame to <strong>low</strong> before launching and keep it low. For extra colour, raise the flame for the final <strong>15&ndash;20 seconds</strong>. Check stone temp with the infrared thermometer.</div>
-    </div>
+  <div class="mode-btn" id="tabBake" role="button" tabindex="0">
+    <span class="k">Bake Day</span>
+    <span class="s">When to pull it out</span>
   </div>
 </div>
 
-<div class="card">
-  <h2>Kenwood mixing method</h2>
-  <ol class="steps">
-    <li><strong>Mix: Speed Min, 2 min.</strong> Water, yeast and sugar in the bowl, mix briefly, then add flour. Dough hook. Stop once hydrated.</li>
-    <li><strong>Autolyse: 20 min.</strong> Cover the bowl and walk away.</li>
-    <li><strong>Develop.</strong> Add salt and olive oil. Speed 1 for 3 min, then Speed 2 for 5&ndash;6 min. Never exceed Speed 2 with the dough hook.</li>
-    <li><strong>Check.</strong> Smooth, elastic, slightly tacky, clears the bowl sides, sticks lightly at the bottom, passes the windowpane test.</li>
-    <li><strong>Rest 10&ndash;15 min</strong>, divide, ball immediately. No long warm bulk.</li>
-    <li><strong>Store.</strong> Lightly oiled tray (never floured), cover tightly, straight into the fridge.</li>
-  </ol>
-  <div class="note">Target finished dough temperature: <strong>23&ndash;25&deg;C</strong> (acceptable 22&ndash;26&deg;C). If it finishes above 26&deg;C, skip any room-temperature rest and refrigerate sooner. Bench flour for stretching: <strong>50/50 flour and fine semolina</strong>. Hand-stretch only.</div>
-</div>
+<!-- ================= DOUGH DAY ================= -->
+<section id="doughMode">
 
-<footer>Jeet's house formula: 62% hydration &middot; 2.5% salt &middot; 2% oil &middot; 1% sugar &middot; yeast adjusted to the weather, like a proper pizzaiolo</footer>
+  <div class="card no-print">
+    <h2>Your batch</h2>
+    <div class="row"><label>Number of pizzas</label><input type="number" id="numBalls" value="4" min="1" max="24" step="1"></div>
+    <div class="row"><label>Ball weight (g) <span class="hint">12in &asymp;260 &middot; 14in &asymp;350 &middot; 16in &asymp;450</span></label><input type="number" id="ballWeight" value="350" min="150" max="700" step="10"></div>
+    <div class="row"><label>Loss allowance (%) <span class="hint">Makes a little extra for what sticks to the hook, hands and bowl</span></label><input type="number" id="overage" value="5" min="0" max="20" step="1"></div>
+    <div class="row"><label>Cold ferment <span class="hint">In the fridge, as balls</span></label>
+      <select id="fermentDays">
+        <option value="1">1 day</option>
+        <option value="2">2 days</option>
+        <option value="3" selected>3 days</option>
+        <option value="4">4 days</option>
+      </select>
+    </div>
+    <div class="row"><label>Baking on <span class="hint">Optional. Set your pizza day to get the mixing day</span></label><input type="date" id="planBakeDate"></div>
+    <div class="row"><label>Room temp today (&deg;C) <span class="hint">Sets the water and the bench rest</span></label><input type="number" id="roomTempMix" value="21" min="8" max="38" step="0.5"></div>
+    <div class="note good" id="planNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recipe</h2>
+    <table>
+      <thead><tr><th>Ingredient</th><th class="num">Baker's %</th><th class="num">Weight</th></tr></thead>
+      <tbody id="recipeBody"></tbody>
+    </table>
+    <div class="total-line"><span id="ballSummary"></span><span id="totalDough"></span></div>
+    <div class="note" id="yeastNote"></div>
+    <div class="note" id="waterNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>Method</h2>
+    <ol class="steps" id="doughSteps"></ol>
+  </div>
+
+  <div class="card">
+    <h2>Weigh &amp; split</h2>
+    <div class="row no-print"><label>Weighed dough (g) <span class="hint">What you actually pulled off the hook, after mixing</span></label><input type="number" id="actualDough" min="0" max="9000" step="10" placeholder="e.g. 1360"></div>
+    <div class="note" id="splitNote"></div>
+  </div>
+
+</section>
+
+<!-- ================= BAKE DAY ================= -->
+<section id="bakeMode" class="hidden">
+
+  <div class="card no-print">
+    <h2>Pizza day</h2>
+    <div class="row"><label>Date</label><input type="date" id="bakeDate"></div>
+    <div class="row"><label>First launch</label><input type="time" id="bakeTime" value="17:30"></div>
+    <div class="row"><label>Room temp now (&deg;C) <span class="hint">The real number off your thermometer</span></label><input type="number" id="roomTempCook" value="24" min="8" max="38" step="0.5"></div>
+  </div>
+
+  <div class="card">
+    <h2>The plan</h2>
+    <ul class="sched" id="schedule"></ul>
+    <div class="note" id="mixByNote"></div>
+    <div class="note" id="tempNote"></div>
+    <div class="no-print">
+      <div class="row"><label>Copy timings for</label>
+        <select id="copyStyle">
+          <option value="home" selected>Anyone at home</option>
+          <option value="cook">The cook</option>
+        </select>
+      </div>
+      <button class="btn" id="copyBtn">Copy timings</button>
+      <button class="btn alt" id="icsBtn">Add to iPhone calendar</button>
+      <p class="hint" style="margin-top:10px">"Anyone at home" is a friendly overview to drop in the family chat. "The cook" gives the full detail for each step. The calendar file adds every step as an event with an alert.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>At the oven</h2>
+    <ol class="steps" id="bakeSteps"></ol>
+  </div>
+
+</section>
+
+<footer>Built for Jeet &middot; keep the fridge cold and the stone hot</footer>
 
 <script>
 (function () {
+  "use strict";
   const $ = id => document.getElementById(id);
-  const inputs = ["scaleMode","flourWeight","numBalls","pizzaSize","thickness","hydration","salt","oil","sugar","yeastType","yeastMode","yeastManual","fermentHours","roomTempCook","roomTempMix","bakeTime","bakeDate","actualDough","copyStyle"];
+
+  // ---- Fixed house formula (Pizza Pig, single strong bread flour) ----
+  const HYD = 61, SALT = 2.6, OIL = 2, SUGAR = 1.5;
+  // Fresh yeast basis, anchored at 0.48% for a 3-day ferment, scaled by days.
+  const freshPctFor = d => 1.44 / d;               // d=3 -> 0.48%
+  const fmtG = g => (g >= 100 ? Math.round(g) : Math.round(g * 10) / 10) + " g";
+  const fmtPct = p => (Math.round(p * 100) / 100) + "%";
+
+  const inputs = ["numBalls","ballWeight","overage","fermentDays","roomTempMix","planBakeDate","actualDough","bakeDate","bakeTime","roomTempCook","copyStyle"];
   let lastSchedule = [];
 
-  // Ball weight from NY thickness factor (oz per sq inch), rounded to 5 g.
-  // Classic NY range: 0.075-0.095. E.g. 0.085 -> 12": 270 g, 14": 370 g, 16": 485 g.
-  function ballWeightFor(sizeInches, tf) {
-    const area = Math.PI * Math.pow(sizeInches / 2, 2);
-    return Math.round(tf * area * 28.3495 / 5) * 5;
+  // ---- Mode switching ----
+  function setMode(m) {
+    const dough = m === "dough";
+    $("doughMode").classList.toggle("hidden", !dough);
+    $("bakeMode").classList.toggle("hidden", dough);
+    $("tabDough").classList.toggle("active", dough);
+    $("tabBake").classList.toggle("active", !dough);
+    try { localStorage.setItem("nyPizzaMode", m); } catch (e) {}
+  }
+  $("tabDough").addEventListener("click", () => setMode("dough"));
+  $("tabBake").addEventListener("click", () => setMode("bake"));
+  $("tabDough").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") setMode("dough"); });
+  $("tabBake").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") setMode("bake"); });
+
+  // ---- Time helpers ----
+  function addMinutes(hhmm, mins) {
+    let [h, m] = hhmm.split(":").map(Number);
+    let t = h * 60 + m + mins;
+    t = ((t % 1440) + 1440) % 1440;
+    return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
+  }
+  function niceTime(t) {
+    let [h, m] = t.split(":").map(Number);
+    const ap = h >= 12 ? "pm" : "am";
+    h = h % 12 || 12;
+    return h + ":" + String(m).padStart(2, "0") + ap;
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  }
+  function shiftDays(dateStr, delta) {
+    const d = new Date(dateStr + "T12:00:00");
+    d.setDate(d.getDate() + delta);
+    return d;
   }
 
-  // ---- Yeast recommendation (fresh-yeast basis) ----
-  // Baseline: 42-48 h cold ferment.
-  //   18-22 C room -> 1.5%   |   27-30 C room -> 1.0-1.2% (use 1.1)
-  //   Linear interpolation between 22 and 27 C; clamped outside.
-  // Ferment-length multiplier vs 48 h baseline: 24 h x1.25, 72 h x0.8.
-  function recommendedFreshPct(roomTemp, fermentHours) {
-    let base;
-    if (roomTemp <= 22) base = 1.5;
-    else if (roomTemp >= 27) base = 1.1;
-    else base = 1.5 - (roomTemp - 22) * (0.4 / 5);
-    const mult = fermentHours <= 24 ? 1.25 : (fermentHours >= 72 ? 0.8 : 1.0);
-    return Math.round(base * mult * 100) / 100;
-  }
-
-  function fmtG(x) {
-    return x >= 100 ? Math.round(x) + " g" : (Math.round(x * 10) / 10) + " g";
-  }
-  function fmtPct(x) { return (Math.round(x * 100) / 100) + "%"; }
-
-  function addMinutes(timeStr, mins) {
-    const [h, m] = timeStr.split(":").map(Number);
-    let total = h * 60 + m + mins;
-    total = ((total % 1440) + 1440) % 1440;
-    const hh = String(Math.floor(total / 60)).padStart(2, "0");
-    const mm = String(total % 60).padStart(2, "0");
-    return hh + ":" + mm;
-  }
-
+  // ---- Main calc ----
   function calc() {
-    const byFlour = $("scaleMode").value === "flour";
-    $("flourRow").style.display = byFlour ? "flex" : "none";
-    $("numRow").style.display = byFlour ? "none" : "flex";
-    const size = +$("pizzaSize").value || 14;
-    const tf = +$("thickness").value || 0.085;
-    const bw = ballWeightFor(size, tf);
-    let sn = `Ball weight: <strong>${bw} g</strong> per ${size}-inch pizza.`;
-    if (size >= 16) sn += ` <span class="warn">A standard Gozney Arc tops out around 14-inch. A 16-inch needs an Arc XL.</span> Larger pies are usually stretched at the thinner end.`;
-    $("sizeNote").innerHTML = sn;
-    const hyd = +$("hydration").value || 62;
-    const salt = +$("salt").value || 0;
-    const oil = +$("oil").value || 0;
-    const sugar = +$("sugar").value || 0;
-    const roomTemp = +$("roomTempCook").value || 21;
-    const mixTemp = +$("roomTempMix").value || 21;
-    const fermentHours = +$("fermentHours").value;
+    // ===== DOUGH DAY =====
+    const n = Math.max(1, +$("numBalls").value || 1);
+    const bw = Math.max(1, +$("ballWeight").value || 350);
+    const days = +$("fermentDays").value || 3;
+    const Tm = +$("roomTempMix").value;
+    const overage = Math.max(0, +$("overage").value || 0);
+    const freshPct = freshPctFor(days);
 
-    // ---- Dough day note: mixing date + water temperature guide ----
-    // Water temp from desired dough temp (DDT 24°C): 3 x DDT - room - flour - friction.
-    // Flour assumed at room temp; Kenwood friction ~3°C over this short mix.
-    let dd = "";
-    const bd = $("bakeDate").value;
-    if (bd) {
-      const d0 = new Date(bd + "T12:00:00");
-      d0.setDate(d0.getDate() - Math.round(fermentHours / 24));
-      dd = "Make the dough on <strong>" + d0.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + "</strong>, around the same time of day as your bake. ";
-    }
-    let wt = Math.round(3 * 24 - 2 * mixTemp - 3);
-    wt = Math.max(5, Math.min(30, wt));
-    dd += `Use water at about <strong>${wt}&deg;C</strong> so the finished dough lands at 23&ndash;25&deg;C.`;
-    if (mixTemp >= 27) dd += ` <span class="warn">Warm kitchen on dough day: use fridge-cold water and get the balls into the fridge promptly.</span>`;
-    $("doughDayNote").innerHTML = dd;
-    const yeastType = $("yeastType").value;
-    const auto = $("yeastMode").value === "auto";
-    $("manualYeastRow").style.display = auto ? "none" : "flex";
+    const totalPct = 100 + HYD + SALT + OIL + SUGAR + freshPct;
+    const targetDough = n * bw;                          // what you want in balls
+    const totalDough = targetDough * (1 + overage / 100); // what the recipe makes
+    const flour = totalDough / (totalPct / 100);
 
-    const freshPct = auto ? recommendedFreshPct(roomTemp, fermentHours) : (+$("yeastManual").value || 1.5);
-    // Instant dry yeast weighs roughly a third of fresh for the same effect.
-    const effYeastPct = yeastType === "fresh" ? freshPct : freshPct / 3;
-    const totalPct = 100 + hyd + salt + oil + sugar + effYeastPct;
-
-    let flour, totalDough, n;
-    if (byFlour) {
-      flour = Math.max(1, +$("flourWeight").value || 1000);
-      totalDough = flour * totalPct / 100;
-      n = totalDough / bw;
-    } else {
-      n = Math.max(1, +$("numBalls").value || 1);
-      totalDough = n * bw;
-      flour = totalDough / (totalPct / 100);
-    }
-
+    const fresh = flour * freshPct / 100;
     const rows = [
-      ["Flour (strong white, 12–14% protein)", 100, flour],
-      ["Water", hyd, flour * hyd / 100],
-      ["Salt", salt, flour * salt / 100],
-      ["Olive oil", oil, flour * oil / 100],
-      ["Sugar", sugar, flour * sugar / 100],
-      [(yeastType === "fresh" ? "Fresh yeast" : "Instant yeast"), effYeastPct, flour * effYeastPct / 100]
+      ["Strong white bread flour", 100, flour],
+      ["Water", HYD, flour * HYD / 100],
+      ["Salt", SALT, flour * SALT / 100],
+      ["Olive oil", OIL, flour * OIL / 100],
+      ["Sugar", SUGAR, flour * SUGAR / 100],
+      ["Fresh yeast", freshPct, fresh]
     ];
     $("recipeBody").innerHTML = rows.map(r =>
-      `<tr><td>${r[0]}</td><td class="num">${fmtPct(r[1])}</td><td class="num"><strong>${fmtG(r[2])}</strong></td></tr>`
+      `<tr><td>${r[0]}</td><td class="num">${fmtPct(r[1])}</td><td class="num g">${fmtG(r[2])}</td></tr>`
     ).join("");
-    $("totalDough").textContent = Math.round(totalDough) + " g";
-    if (byFlour) {
-      const whole = Math.max(1, Math.round(totalDough / bw));
-      const even = Math.round(totalDough / whole);
-      $("ballSummary").textContent = "Makes " + whole + " ball" + (whole > 1 ? "s" : "") +
-        " of " + even + " g → " + size + "-inch pizzas (ideal ball: " + bw + " g)";
+    $("totalDough").textContent = Math.round(totalDough) + " g total";
+    $("ballSummary").innerHTML = n + (n > 1 ? " balls × " : " ball × ") + bw + " g" +
+      (overage > 0 ? ` <span class="hint">(making ${Math.round(totalDough)} g to cover ${overage}% loss)</span>` : "");
+
+    // Yeast conversions
+    $("yeastNote").innerHTML =
+      `<strong>Yeast:</strong> ${fmtG(fresh)} fresh for a ${days}-day cold ferment. ` +
+      `No fresh in? Use ${fmtG(fresh / 2)} active dried, or ${fmtG(fresh / 3)} instant.`;
+
+    // Water rule (Pizza Pig)
+    if (Tm <= 19) {
+      $("waterNote").innerHTML = `<strong>Water:</strong> kitchen's cool at ${Tm}&deg;C, so use warm water at 25–30&deg;C to get the yeast going.`;
     } else {
-      $("ballSummary").textContent = n + " ball" + (n > 1 ? "s" : "") + " × " + bw + " g → " + size + "-inch pizzas";
+      $("waterNote").innerHTML = `<strong>Water:</strong> use it cold, straight from the fridge (~4–6&deg;C). The warm kitchen does the rest.`;
     }
 
-    // ---- Balling helper: divide actual (weighed) dough ----
+    // Bench rest by temp (whole-dough rest before dividing)
+    let restMin, restBand;
+    if (Tm >= 24) { restMin = 15; restBand = "warm"; }
+    else if (Tm >= 20) { restMin = 30; restBand = "middling"; }
+    else { restMin = 60; restBand = "cool"; }
+
+    const waterLine = Tm <= 19 ? "warm water (25–30&deg;C)" : "cold water";
+    $("doughSteps").innerHTML = [
+      `Mix the ${waterLine} with the fresh yeast on Speed 1 for about a minute.`,
+      `Add all the flour. Mix on Speed 1 until there's no dry flour left, then stop and rest 10–15 minutes.`,
+      `Back on Speed 1, drizzle in the olive oil and mix about a minute until smooth.`,
+      `Add the salt and sugar. Mix on Speed 1 for roughly 2 minutes, until the dough comes cleanly off the sides of the bowl.`,
+      `Turn out onto the bench and do a few stretch-and-folds until it stops sticking to your hands.`,
+      `Shape into one round and rest, covered, for <b>${restMin} minutes</b> (${restBand} kitchen at ${Tm}&deg;C).`,
+      `Divide into <b>${n} piece${n > 1 ? "s" : ""} of ${bw} g</b>. Weigh them so they match.`,
+      `Ball each one tight: fold it over itself 4 or 5 times until the top is smooth, pinch the seam closed underneath, then roll it on the bench to seal. This is the bit that stops a ball tearing later.`,
+      `Oil your containers, drop the balls in with room to spread, lid on.`,
+      `Into the fridge to cold ferment for <b>${days} day${days > 1 ? "s" : ""}</b>. Switch to Bake Day mode when you're ready to cook.`
+    ].map(s => `<li>${s}</li>`).join("");
+
+    // Fermentation planning
+    const planVal = $("planBakeDate").value;
+    if (planVal) {
+      const bakeOn = new Date(planVal + "T12:00:00");
+      const mixOn = shiftDays(planVal, -days);
+      $("planNote").innerHTML =
+        `To bake on <b>${fmtDate(bakeOn)}</b>, start the dough on <b>${fmtDate(mixOn)}</b>, ` +
+        `then cold ferment ${days} day${days > 1 ? "s" : ""} in the fridge.`;
+    } else {
+      const today = new Date().toISOString().slice(0, 10);
+      const ready = shiftDays(today, days);
+      $("planNote").innerHTML =
+        `Mixed today, this dough is ready to bake from <b>${fmtDate(ready)}</b>. ` +
+        `Set a bake day above to work back to a mixing day instead.`;
+    }
+
+    // Weigh & split: divide the ACTUAL weighed dough, not the theoretical total
     const actual = +$("actualDough").value;
     if (actual > 0) {
-      const balls = Math.max(1, Math.round(actual / bw));
-      const even = actual / balls;
+      const each = actual / n;
       const loss = totalDough - actual;
-      let msg = `<strong>Divide into ${balls} ball${balls > 1 ? "s" : ""} of ${Math.round(even)} g each</strong> for ${size}-inch pizzas.`;
-      const dev = (even - bw) / bw * 100;
-      if (Math.abs(dev) > 4) {
-        msg += ` <span class="warn">That's ${dev > 0 ? "+" : ""}${Math.round(dev)}% vs the ideal ${bw} g, so expect a slightly ${dev > 0 ? "thicker" : "thinner"} pizza.</span>`;
+      const dev = (each - bw) / bw * 100;
+      let msg = `<strong>Divide into ${n} ball${n > 1 ? "s" : ""} of ${Math.round(each)} g each.</strong>`;
+      if (Math.abs(dev) < 3) {
+        msg += ` Bang on your ${bw} g target.`;
+      } else {
+        msg += ` That's ${dev > 0 ? "+" : ""}${Math.round(dev)}% on your ${bw} g target, so slightly ${dev > 0 ? "bigger" : "smaller"} pizzas.`;
       }
-      if (loss > 5) msg += `<br>About ${Math.round(loss)} g stayed on the bowl and hook.`;
-      else if (loss < -5) msg += `<br>You have ${Math.round(-loss)} g more than the recipe predicts. Worth re-checking the scales.`;
-      $("ballingResult").innerHTML = msg;
+      if (loss > 5) msg += `<br><span class="hint">About ${Math.round(loss)} g stayed on the hook, hands and bowl. That's the usual tax, nothing wrong.</span>`;
+      else if (loss < -5) msg += `<br><span class="hint">That's ${Math.round(-loss)} g more than the recipe predicts, worth a quick re-check of the scales.</span>`;
+      $("splitNote").innerHTML = msg;
     } else {
-      $("ballingResult").innerHTML = `Recipe predicts <strong>${Math.round(totalDough)} g</strong>. Weigh the finished dough, Jeet (the hook always taxes you a bit) and enter it here for exact ball weights.`;
+      $("splitNote").innerHTML = `Recipe predicts <b>${Math.round(totalDough)} g</b>. Weigh what you actually get off the hook, Jeet, some always sticks, and pop it in here for exact ball weights.`;
     }
 
-    // Yeast note
-    let yn = auto
-      ? `<strong>Auto yeast:</strong> ${fmtPct(freshPct)} fresh-yeast basis for ${fermentHours <= 24 ? "24 h" : fermentHours >= 72 ? "72 h" : "44–48 h"} cold ferment at ${roomTemp}°C on pizza day.`
-      : `<strong>Manual yeast:</strong> ${fmtPct(freshPct)} fresh-yeast basis.`;
-    if (yeastType === "instant") yn += " Converted to instant at one third of the fresh weight.";
-    if (roomTemp >= 27) yn += ` <span class="warn">Warm kitchen: yeast reduced to help prevent over-proofing.</span>`;
-    $("yeastNote").innerHTML = yn;
+    // ===== BAKE DAY =====
+    const Tc = +$("roomTempCook").value;
+    const bake = $("bakeTime").value || "17:30";
 
-    // ---- Schedule ----
-    const bake = $("bakeTime").value || "17:00";
-    const warm = roomTemp >= 25;
-    const outMins = warm ? 210 : 165;
-    const outTime = addMinutes(bake, -outMins);
-    const checkTime = addMinutes(outTime, warm ? 120 : 105);
+    // Proof length: 4h at >=24C, 6h at <=19C, linear between.
+    let proofMin;
+    if (Tc >= 24) proofMin = 240;
+    else if (Tc <= 19) proofMin = 360;
+    else proofMin = Math.round(360 - 24 * (Tc - 19));
+    const proofH = Math.round(proofMin / 6) / 10; // hours, 1dp
+
+    const outTime = addMinutes(bake, -proofMin);
+    const checkTime = addMinutes(bake, -60);
     const preheat = addMinutes(bake, -40);
-    const flameLow = addMinutes(bake, -5);
+    const flameLow = addMinutes(bake, -8);
 
+    const warm = Tc >= 25;
     const items = [
-      [outTime, "Dough out of the fridge", `Remove dough from fridge (${warm ? "3–4" : "2½–3"} h before baking in ${warm ? "warm" : "cool"} conditions). Keep covered.`],
-      [checkTime, "Check the dough", "Check the dough: soft, puffy, relaxed, gently jiggles when the tray is moved. Ready early? Move it to the coolest room, or back in the fridge for 20–30 min."],
-      [preheat, "Light the Gozney", "Light the Gozney Arc. Full flame, 30–40 min preheat, stone to ~400°C."],
-      [flameLow, "Flame to low", "Flame to low. Let the launch zone settle to 340–350°C (check with IR thermometer)."],
-      [bake, "Launch the pizza", "Launch. Flame stays low. Rotate every 30–45 s. Out in 4½–5½ min. Enjoy, Jeet, you've earned this slice."]
+      [outTime, "Balls out of the fridge", `Take the balls out, keep them covered. About ${proofH} h before launch for a ${Tc}&deg;C kitchen. They need to warm up and relax before they'll stretch.`],
+      [checkTime, "Check the balls", `They should be puffed, soft and slack, spreading a little and jiggling when you nudge the tray. Ready too early? Slide them somewhere cooler, or briefly back in the fridge.`],
+      [preheat, "Light the Gozney", `Full flame on the Arc, 30–40 min, stone up to around 400&deg;C.`],
+      [flameLow, "Flame to low", `Drop the flame and let the launch spot settle to 340–350&deg;C.`],
+      [bake, "Launch", `Stretch, top, and launch the first one. Rotate every 30–45 s, out in 4½–5½ min. Enjoy it, Jeet.`]
     ];
     lastSchedule = items;
-    $("schedule").innerHTML = items.map(i => `<li><span class="t">${i[0]}</span><span>${i[2]}</span></li>`).join("");
+    $("schedule").innerHTML = items.map(i =>
+      `<li><span class="t">${niceTime(i[0])}</span><span class="d"><b>${i[1]}.</b> ${i[2]}</span></li>`
+    ).join("");
 
-    $("tempNote").innerHTML = warm
-      ? `<span class="warn">Warm kitchen (${roomTemp}°C):</span> start checking about 2 hours after removal, dough can be ready earlier than expected.`
-      : `Cool conditions (${roomTemp}°C): the dough will take most of the ${Math.round(outMins/60*10)/10} hours to wake up. Be patient before stretching.`;
+    const bakeDateVal = $("bakeDate").value;
+    if (bakeDateVal) {
+      const bakeOn2 = new Date(bakeDateVal + "T12:00:00");
+      const mixOn2 = shiftDays(bakeDateVal, -days);
+      $("mixByNote").innerHTML =
+        `<strong>Mixing day:</strong> for a ${fmtDate(bakeOn2)} bake, mix and ball the dough on ` +
+        `<b>${fmtDate(mixOn2)}</b> (${days} day${days > 1 ? "s" : ""} in the fridge).`;
+    } else {
+      $("mixByNote").innerHTML = "";
+    }
+
+    if (warm) {
+      $("tempNote").innerHTML = `<span class="warn">Warm kitchen (${Tc}&deg;C).</span> The balls will move fast, so from about an hour before launch trust the look and feel over the clock. If they race ahead, the fridge is your brake.`;
+      $("tempNote").className = "note";
+    } else {
+      $("tempNote").innerHTML = `Cool-ish at ${Tc}&deg;C, so give them the full ${proofH} h to wake up. Patience before stretching, a cold ball fights back and tears.`;
+      $("tempNote").className = "note good";
+    }
+
+    $("bakeSteps").innerHTML = [
+      `Flour the bench with a little semolina. Tip the ball out and gently press from the middle out, leaving a rim for the crust.`,
+      `Stretch on your knuckles, letting gravity do the work as you rotate around the edge. Push any excess semolina off.`,
+      `Move it onto a floured peel, top it quickly, and launch with the flame off.`,
+      `When the crust puffs on one side, spin it 180&deg;. After about a minute, flame back on low to finish the bake.`,
+      `Onto a rack for 3–4 minutes before slicing, so the base stays crisp.`
+    ].map(s => `<li>${s}</li>`).join("");
 
     save();
   }
 
-  // ---- Persistence (safe if unavailable) ----
+  // ---- Persistence (degrades safely) ----
   function save() {
     try {
       const s = {};
       inputs.forEach(id => s[id] = $(id).value);
-      localStorage.setItem("nyPizzaCalc", JSON.stringify(s));
+      localStorage.setItem("nyPizzaCalc2", JSON.stringify(s));
     } catch (e) {}
   }
   function load() {
     try {
-      const s = JSON.parse(localStorage.getItem("nyPizzaCalc"));
-      if (s) inputs.forEach(id => { if (s[id] !== undefined) $(id).value = s[id]; });
+      const s = JSON.parse(localStorage.getItem("nyPizzaCalc2"));
+      if (s) inputs.forEach(id => { if (s[id] !== undefined && $(id)) $(id).value = s[id]; });
+      const m = localStorage.getItem("nyPizzaMode");
+      if (m) setMode(m);
     } catch (e) {}
   }
 
-  // ---- iPhone calendar & copy timings ----
+  // ---- iPhone calendar + copy timings ----
   function icsStamp(dateStr, timeStr) {
     return dateStr.replace(/-/g, "") + "T" + timeStr.replace(":", "") + "00";
   }
@@ -464,20 +469,14 @@
     const dateStr = $("bakeDate").value || new Date().toISOString().slice(0, 10);
     const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Jeet Pizza Calculator//EN"];
     lastSchedule.forEach((it, i) => {
-      const start = icsStamp(dateStr, it[0]);
-      const end = icsStamp(dateStr, addMinutes(it[0], 15));
       lines.push(
         "BEGIN:VEVENT",
         "UID:pizza-" + dateStr + "-" + i + "@jeet",
-        "DTSTART:" + start,
-        "DTEND:" + end,
+        "DTSTART:" + icsStamp(dateStr, it[0]),
+        "DTEND:" + icsStamp(dateStr, addMinutes(it[0], 10)),
         "SUMMARY:" + "\u{1F355} " + it[1],
-        "DESCRIPTION:" + it[2].replace(/,/g, "\\,"),
-        "BEGIN:VALARM",
-        "ACTION:DISPLAY",
-        "DESCRIPTION:" + it[1],
-        "TRIGGER:PT0S",
-        "END:VALARM",
+        "DESCRIPTION:" + it[2].replace(/<[^>]+>/g, "").replace(/,/g, "\\,"),
+        "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + it[1], "TRIGGER:PT0S", "END:VALARM",
         "END:VEVENT"
       );
     });
@@ -492,47 +491,38 @@
     a.click();
     URL.revokeObjectURL(a.href);
   });
-  function niceTime(t) {
-    let [h, m] = t.split(":").map(Number);
-    const ap = h >= 12 ? "pm" : "am";
-    h = h % 12 || 12;
-    return h + ":" + String(m).padStart(2, "0") + ap;
-  }
   function timingsText() {
     const dateStr = $("bakeDate").value || new Date().toISOString().slice(0, 10);
     const d = new Date(dateStr + "T12:00:00");
     const nice = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
     const forCook = $("copyStyle").value === "cook";
     const friendly = [
-      "dough comes out of the fridge (leave it covered, don't poke it)",
-      "quick check on the dough (soft and puffy means it's ready)",
-      "oven goes on",
+      "dough balls come out of the fridge (keep them covered, don't poke them)",
+      "quick check on the dough (soft and puffy means they're ready)",
+      "oven goes on to heat up",
       "flame goes down, nearly time",
       "first pizza goes in! Eating shortly after"
     ];
+    const clean = s => s.replace(/<[^>]+>/g, "").replace(/&deg;/g, "\u00B0").replace(/&amp;/g, "&");
     let txt = "\u{1F355} Pizza day: " + nice + "\n\n";
     lastSchedule.forEach((it, i) => {
-      txt += niceTime(it[0]) + " – " + (forCook ? it[2] : (friendly[i] || it[1])) + "\n";
+      const line = forCook ? (it[1] + " \u2013 " + clean(it[2])) : (friendly[i] || it[1]);
+      txt += niceTime(it[0]) + " \u2013 " + line + "\n";
       if (forCook) txt += "\n";
     });
     return txt.trim();
   }
   $("copyBtn").addEventListener("click", async () => {
     const txt = timingsText();
-    try {
-      await navigator.clipboard.writeText(txt);
-    } catch (e) {
+    try { await navigator.clipboard.writeText(txt); }
+    catch (e) {
       const ta = document.createElement("textarea");
-      ta.value = txt;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
     }
-    const b = $("copyBtn");
-    const orig = b.innerHTML;
+    const b = $("copyBtn"); const orig = b.textContent;
     b.textContent = "Copied!";
-    setTimeout(() => { b.innerHTML = orig; }, 1600);
+    setTimeout(() => { b.textContent = orig; }, 1600);
   });
 
   inputs.forEach(id => $(id).addEventListener("input", calc));
