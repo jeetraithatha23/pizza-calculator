@@ -170,8 +170,8 @@
         <option value="4">4 days</option>
       </select>
     </div>
-    <div class="row"><label>Baking on <span class="hint">Optional. Set your pizza day to get the mixing day</span></label><input type="date" id="planBakeDate"></div>
-    <div class="row"><label>Room temp today (&deg;C) <span class="hint">Sets the water and the bench rest</span></label><input type="number" id="roomTempMix" value="21" min="8" max="38" step="0.5"></div>
+    <div class="row"><label>Baking on <span class="hint">Optional. Set your pizza day and launch time to get the mixing day and time</span></label><span style="display:flex;gap:6px"><input type="date" id="planBakeDate"><input type="time" id="planBakeTime" value="17:30" style="width:100px"></span></div>
+    <div class="row"><label>Room temp today (&deg;C) <span class="hint">Sets the bench rest length</span></label><input type="number" id="roomTempMix" value="21" min="8" max="38" step="0.5"></div>
     <div class="note good" id="planNote"></div>
   </div>
 
@@ -248,7 +248,7 @@
   const fmtG = g => (g >= 100 ? Math.round(g) : Math.round(g * 10) / 10) + " g";
   const fmtPct = p => (Math.round(p * 100) / 100) + "%";
 
-  const inputs = ["numBalls","ballWeight","overage","fermentDays","roomTempMix","planBakeDate","actualDough","bakeDate","bakeTime","roomTempCook","copyStyle"];
+  const inputs = ["numBalls","ballWeight","overage","fermentDays","roomTempMix","planBakeDate","planBakeTime","actualDough","bakeDate","bakeTime","roomTempCook","copyStyle"];
   let lastSchedule = [];
 
   // ---- Mode switching ----
@@ -285,6 +285,13 @@
     const d = new Date(dateStr + "T12:00:00");
     d.setDate(d.getDate() + delta);
     return d;
+  }
+  function roundTo(date, mins) {
+    const ms = mins * 60000;
+    return new Date(Math.round(date.getTime() / ms) * ms);
+  }
+  function hhmm(d) {
+    return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   }
 
   // ---- Main calc ----
@@ -323,12 +330,10 @@
       `<strong>Yeast:</strong> ${fmtG(fresh)} fresh for a ${days}-day cold ferment. ` +
       `No fresh in? Use ${fmtG(fresh / 2)} active dried, or ${fmtG(fresh / 3)} instant.`;
 
-    // Water rule (Pizza Pig)
-    if (Tm <= 19) {
-      $("waterNote").innerHTML = `<strong>Water:</strong> kitchen's cool at ${Tm}&deg;C, so use warm water at 25–30&deg;C to get the yeast going.`;
-    } else {
-      $("waterNote").innerHTML = `<strong>Water:</strong> use it cold, straight from the fridge (~4–6&deg;C). The warm kitchen does the rest.`;
-    }
+    // Water: fixed cold-water target (~17C); Jeet tops up cold tap with a splash of warm
+    const wt = 17;
+    $("waterNote").innerHTML =
+      `<strong>Water:</strong> use it cold, around <b>17&deg;C</b>. Start with cold tap and add a splash of warm to bring it up if it's colder than that.`;
 
     // Bench rest by temp (whole-dough rest before dividing)
     let restMin, restBand;
@@ -336,9 +341,8 @@
     else if (Tm >= 20) { restMin = 30; restBand = "middling"; }
     else { restMin = 60; restBand = "cool"; }
 
-    const waterLine = Tm <= 19 ? "warm water (25–30&deg;C)" : "cold water";
     $("doughSteps").innerHTML = [
-      `Mix the ${waterLine} with the fresh yeast on Speed 1 for about a minute.`,
+      `Mix the water (about <b>${wt}&deg;C</b>) with the fresh yeast on Speed 1 for about a minute.`,
       `Add all the flour. Mix on Speed 1 until there's no dry flour left, then stop and rest 10–15 minutes.`,
       `Back on Speed 1, drizzle in the olive oil and mix about a minute until smooth.`,
       `Add the salt and sugar. Mix on Speed 1 for roughly 2 minutes, until the dough comes cleanly off the sides of the bowl.`,
@@ -353,17 +357,21 @@
     // Fermentation planning
     const planVal = $("planBakeDate").value;
     if (planVal) {
-      const bakeOn = new Date(planVal + "T12:00:00");
-      const mixOn = shiftDays(planVal, -days);
+      const planTime = $("planBakeTime").value || "17:30";
+      const launchDT = new Date(planVal + "T" + planTime + ":00");
+      const NOMINAL_PROOF = 300, PREP = 60; // planning assumptions, minutes
+      const back = NOMINAL_PROOF + days * 24 * 60 + PREP;
+      const mixDT = roundTo(new Date(launchDT.getTime() - back * 60000), 15);
       $("planNote").innerHTML =
-        `To bake on <b>${fmtDate(bakeOn)}</b>, start the dough on <b>${fmtDate(mixOn)}</b>, ` +
-        `then cold ferment ${days} day${days > 1 ? "s" : ""} in the fridge.`;
+        `To launch at <b>${niceTime(planTime)}</b> on <b>${fmtDate(launchDT)}</b>, start the dough around ` +
+        `<b>${niceTime(hhmm(mixDT))} on ${fmtDate(mixDT)}</b>. ` +
+        `<span class="hint">A ${days}-day cold ferment, plus about an hour to mix and ball and a typical few-hours proof on the day. Set the real room temp in Bake Day mode to sharpen it.</span>`;
     } else {
       const today = new Date().toISOString().slice(0, 10);
       const ready = shiftDays(today, days);
       $("planNote").innerHTML =
         `Mixed today, this dough is ready to bake from <b>${fmtDate(ready)}</b>. ` +
-        `Set a bake day above to work back to a mixing day instead.`;
+        `Set a bake day and time above to work back to when you should start mixing.`;
     }
 
     // Weigh & split: divide the ACTUAL weighed dough, not the theoretical total
@@ -416,11 +424,14 @@
 
     const bakeDateVal = $("bakeDate").value;
     if (bakeDateVal) {
-      const bakeOn2 = new Date(bakeDateVal + "T12:00:00");
-      const mixOn2 = shiftDays(bakeDateVal, -days);
+      const launchDT2 = new Date(bakeDateVal + "T" + bake + ":00");
+      const PREP = 60;
+      const back2 = proofMin + days * 24 * 60 + PREP;
+      const mixDT2 = roundTo(new Date(launchDT2.getTime() - back2 * 60000), 15);
       $("mixByNote").innerHTML =
-        `<strong>Mixing day:</strong> for a ${fmtDate(bakeOn2)} bake, mix and ball the dough on ` +
-        `<b>${fmtDate(mixOn2)}</b> (${days} day${days > 1 ? "s" : ""} in the fridge).`;
+        `<strong>Mixing day:</strong> for a ${niceTime(bake)} launch on ${fmtDate(launchDT2)}, ` +
+        `start the dough around <b>${niceTime(hhmm(mixDT2))} on ${fmtDate(mixDT2)}</b> ` +
+        `(${days}-day ferment, today's ${proofH} h proof, plus an hour to mix and ball).`;
     } else {
       $("mixByNote").innerHTML = "";
     }
